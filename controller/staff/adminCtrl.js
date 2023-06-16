@@ -1,5 +1,7 @@
-const AsyncHandler = require("express-async-handler")
+const AsyncHandler = require("express-async-handler");
 const Admin = require("../../model/Staff/Admin");
+const generateToken = require("../../utils/generateToken");
+const verifyToken = require("../../utils/verifyToken");
 
 //@desc Register admin
 //@router POST /api/v1/admins/register
@@ -7,51 +9,46 @@ const Admin = require("../../model/Staff/Admin");
 exports.registerAdmCtrl = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
-    //checking if admin exists
-    const adminFound = await Admin.findOne({ email });
-    if (adminFound) {
-      throw new Error("Admin Exists");
-    }
+  //checking if admin exists
+  const adminFound = await Admin.findOne({ email });
+  if (adminFound) {
+    throw new Error("Admin Exists");
+  }
 
-    //register
-    const user = await Admin.create({
-      name,
-      email,
-      password,
-    });
-    res.status(201).json({
-      status: "success",
-      data: user,
-    });
-
-})
+  //register
+  const user = await Admin.create({
+    name,
+    email,
+    password,
+  });
+  res.status(201).json({
+    status: "success",
+    data: user,
+  });
+});
 
 //@desc Login admin
 //@router POST /api/v1/admins/login
 //@access Private
-exports.loginAdmCtrl = async (req, res) => {
+exports.loginAdmCtrl = AsyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  try {
 
-    //find user
-    const user = await Admin.findOne({ email });
+  //find user
+  const user = await Admin.findOne({ email });
 
-    if (!user) {
-      return res.json({ message: "Invalid login credential ASDAS" });
-      }
-    if (user && user.verifyPassword(password)) {
-          return res.json({ data: user });
-    } else { 
-          return res.json({message: "Invalid login credential"})
-    }
-      
-  } catch (error) {
-    res.json({
-      status: "failed",
-      error: error.message,
-    });
+  if (!user) {
+    return res.json({ message: "Invalid login credential ASDAS" });
   }
-};
+  if (user && (await user.verifyPassword(password))) {
+    const token = generateToken(user._id);
+
+    const verify = verifyToken(token);
+
+    return res.json({ data: generateToken(user._id), user, verify });
+  } else {
+    return res.json({ message: "Invalid login credential" });
+  }
+});
 
 //@desc Get all admins
 //@router GET /api/v1/admins/
@@ -75,6 +72,8 @@ exports.getAllAdmCtrl = (req, res) => {
 //@access Private
 exports.getSingleAdmCtrl = (req, res) => {
   try {
+    console.log(req.userAuth);
+
     res.status(201).json({
       status: "success",
       data: "Single admin",
