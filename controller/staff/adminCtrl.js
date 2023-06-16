@@ -1,7 +1,9 @@
 const AsyncHandler = require("express-async-handler");
+const bcrypt = require("bcryptjs");
 const Admin = require("../../model/Staff/Admin");
 const generateToken = require("../../utils/generateToken");
 const verifyToken = require("../../utils/verifyToken");
+const { hashPassword, isPassMatched } = require("../../utils/helpers");
 
 //@desc Register admin
 //@router POST /api/v1/admins/register
@@ -19,11 +21,12 @@ exports.registerAdmCtrl = AsyncHandler(async (req, res) => {
   const user = await Admin.create({
     name,
     email,
-    password,
+    password: await hashPassword(password),
   });
   res.status(201).json({
     status: "success",
     data: user,
+    message: "admin registered successfully",
   });
 });
 
@@ -37,71 +40,100 @@ exports.loginAdmCtrl = AsyncHandler(async (req, res) => {
   const user = await Admin.findOne({ email });
 
   if (!user) {
-    return res.json({ message: "Invalid login credential ASDAS" });
-  }
-  if (user && (await user.verifyPassword(password))) {
-    const token = generateToken(user._id);
-
-    const verify = verifyToken(token);
-
-    return res.json({ data: generateToken(user._id), user, verify });
-  } else {
     return res.json({ message: "Invalid login credential" });
+  }
+  //verify password
+  const isMatched = await isPassMatched(password, user.password);
+
+  if (!isMatched) {
+    return res.json({ message: "Invalid login credential" });
+  } else { 
+    return res.json({
+      data: generateToken(user._id),
+      message: "Admin logged in successfully",
+    });
   }
 });
 
 //@desc Get all admins
 //@router GET /api/v1/admins/
 //@access Private
-exports.getAllAdmCtrl = (req, res) => {
-  try {
-    res.status(201).json({
-      status: "success",
-      data: "All admins",
-    });
-  } catch (error) {
-    res.json({
-      status: "failed",
-      error: error.message,
-    });
-  }
-};
+exports.getAllAdmCtrl = AsyncHandler(async (req, res) => {
+  const admins = await Admin.find();
+  res.status(200).json({
+    status: "success",
+    message: "Admin fetched succesfully",
+    data: admins,
+  });
+});
 
 //@desc get Single admin
 //@router GET /api/v1/admins/:id
 //@access Private
-exports.getSingleAdmCtrl = (req, res) => {
-  try {
-    console.log(req.userAuth);
+exports.getSingleAdmProfileCtrl = AsyncHandler(async (req, res) => {
+  const admin = await Admin.findById(req.userAuth._id).select(
+    "-password -createdAt"
+  );
 
-    res.status(201).json({
-      status: "success",
-      data: "Single admin",
-    });
-  } catch (error) {
-    res.json({
-      status: "failed",
-      error: error.message,
+  if (!admin) {
+    throw new Error("Admin not found");
+  } else {
+    res.status(200).json({
+      satus: "succes",
+      data: admin,
+      message: "Admin profile fetched successfully",
     });
   }
-};
+});
 
 //@desc Update admin
 //@router PUT /api/v1/admins/:id
 //@access Private
-exports.updateAdmCtrl = (req, res) => {
-  try {
-    res.status(201).json({
-      status: "success",
-      data: "Update admin",
+exports.updateAdmCtrl = AsyncHandler(async (req, res) => {
+  const { email, name, password } = req.body;
+  //if email is taken
+  const emailExist = await Admin.findOne({ email });
+  if (emailExist) {
+    throw new Error("This email is taken/exist");
+  } 
+
+ //check if user is updating password
+  if (password) {
+    //update
+    const admin = await Admin.findByIdAndUpdate(
+      req.userAuth._id,
+      {
+        email,
+        password: await hashPassword(password),
+        name,
+      },
+      { new: true, runValidators: true }
+    );
+    res.status(200).json({
+      status: "succes",
+      data: admin,
+      message: "admin updated successfully",
     });
-  } catch (error) {
-    res.json({
-      status: "failed",
-      error: error.message,
+  } else { 
+     //update
+     const admin = await Admin.findByIdAndUpdate(
+      req.userAuth._id,
+      {
+        email,
+        name,
+      },
+      { new: true, runValidators: true }
+    );
+    res.status(200).json({
+      status: "succes",
+      data: admin,
+      message: "admin updated successfully",
     });
   }
-};
+
+   
+  
+});
 
 //@desc Delete admin
 //@router DELETE /api/v1/admins/:id
