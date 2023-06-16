@@ -1,16 +1,18 @@
 const express = require('express');
-const morgan = require('morgan');
-
+// const morgan = require('morgan');
+const {globalErrorHandler, notFoundErr} = require('../middlewares/globalErrorHandler');
 const adminRouter = require('../routes/staff/adminRouter');
 
 const app = express();
 
-//Middlewares
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 app.use(express.json()) // pass incoming json data
 
 //Routes
-
 app.use("/api/v1/admins", adminRouter);
+
+//Error middlewares
+app.use(notFoundErr);
+app.use(globalErrorHandler);
 
 module.exports = app;
