@@ -7,6 +7,7 @@ const {
   getStudentByAdmin,
   studentUpdateProfile,
   adminUpdateStudent,
+  writeExam
 } = require("../../controller/students/studentsCtrl");
 
 const isAdmin = require("../../middlewares/isAdmin");
@@ -26,5 +27,11 @@ studentRouter.put(
   isLogin,
   isAdmin,
   adminUpdateStudent
+);
+studentRouter.post(
+  "/exam/:examID/write",
+  isStudentLogin,
+  isStdudent,
+  writeExam
 );
 module.exports = studentRouter;
