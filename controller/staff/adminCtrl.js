@@ -8,7 +8,7 @@ const { hashPassword, isPassMatched } = require("../../utils/helpers");
 //@desc Register admin
 //@router POST /api/v1/admins/register
 //@access Private
-exports.registerAdmCtrl = AsyncHandler(async (req, res) => {
+exports.registerAdminCtrl = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   //checking if admin exists
@@ -33,7 +33,7 @@ exports.registerAdmCtrl = AsyncHandler(async (req, res) => {
 //@desc Login admin
 //@router POST /api/v1/admins/login
 //@access Private
-exports.loginAdmCtrl = AsyncHandler(async (req, res) => {
+exports.loginAdminCtrl = AsyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   //find user
@@ -58,7 +58,7 @@ exports.loginAdmCtrl = AsyncHandler(async (req, res) => {
 //@desc Get all admins
 //@router GET /api/v1/admins/
 //@access Private
-exports.getAllAdmCtrl = AsyncHandler(async (req, res) => {
+exports.getAllAdminCtrl = AsyncHandler(async (req, res) => {
   const admins = await Admin.find();
   res.status(200).json({
     status: "success",
@@ -70,9 +70,9 @@ exports.getAllAdmCtrl = AsyncHandler(async (req, res) => {
 //@desc get Single admin
 //@router GET /api/v1/admins/:id
 //@access Private
-exports.getSingleAdmProfileCtrl = AsyncHandler(async (req, res) => {
+exports.getSingleAdminProfileCtrl = AsyncHandler(async (req, res) => {
   const admin = await Admin.findById(req.userAuth._id).select(
-    "-password -createdAt"
+    "-password -createdAt -updatedAt"
   ).populate("academicYears");
 
   if (!admin) {
@@ -89,7 +89,7 @@ exports.getSingleAdmProfileCtrl = AsyncHandler(async (req, res) => {
 //@desc Update admin
 //@router PUT /api/v1/admins/:id
 //@access Private
-exports.updateAdmCtrl = AsyncHandler(async (req, res) => {
+exports.updateAdminCtrl = AsyncHandler(async (req, res) => {
   const { email, name, password } = req.body;
   //if email is taken
   const emailExist = await Admin.findOne({ email });
@@ -138,7 +138,7 @@ exports.updateAdmCtrl = AsyncHandler(async (req, res) => {
 //@desc Delete admin
 //@router DELETE /api/v1/admins/:id
 //@access Private
-exports.deleteAdmCtrl = (req, res) => {
+exports.deleteAdminCtrl = (req, res) => {
   try {
     res.status(201).json({
       status: "success",
@@ -155,7 +155,7 @@ exports.deleteAdmCtrl = (req, res) => {
 //@desc Suspend Teacher
 //@router PUT /api/v1/suspend/teacher/:id
 //@access Private
-exports.suspendAdmCtrl = (req, res) => {
+exports.suspendAdminCtrl = (req, res) => {
   try {
     res.status(201).json({
       status: "success",
@@ -172,7 +172,7 @@ exports.suspendAdmCtrl = (req, res) => {
 //@desc Unsuspend admin
 //@router PUT /api/v1/suspend/teacher/:id
 //@access Private
-exports.unsuspendAdmCtrl = (req, res) => {
+exports.unsuspendAdminCtrl = (req, res) => {
   try {
     res.status(201).json({
       status: "success",
@@ -189,7 +189,7 @@ exports.unsuspendAdmCtrl = (req, res) => {
 //@desc Withdraw admin
 //@router PUT /api/v1/withdraw/teacher/:id
 //@access Private
-exports.withdrawAdmCtrl = (req, res) => {
+exports.withdrawAdminCtrl = (req, res) => {
   try {
     res.status(201).json({
       status: "success",
@@ -206,7 +206,7 @@ exports.withdrawAdmCtrl = (req, res) => {
 //@desc unwithdraw admin
 //@router PUT /api/v1/unwithdraw/teacher/:id
 //@access Private
-exports.unwithdrawAdmCtrl = (req, res) => {
+exports.unwithdrawAdminCtrl = (req, res) => {
   try {
     res.status(201).json({
       status: "success",
@@ -223,7 +223,7 @@ exports.unwithdrawAdmCtrl = (req, res) => {
 //@desc Publish exam results
 //@router PUT /api/v1/publish/exam/:id
 //@access Private
-exports.publishAdmCtrl = (req, res) => {
+exports.publishAdminCtrl = (req, res) => {
   try {
     res.status(201).json({
       status: "success",
@@ -240,7 +240,7 @@ exports.publishAdmCtrl = (req, res) => {
 //@desc Unpublish exam resluts
 //@router PUT /api/v1/unpublish/exam/:id
 //@access Private
-exports.unpublishAdmCtrl = (req, res) => {
+exports.unpublishAdminCtrl = (req, res) => {
   try {
     res.status(201).json({
       status: "success",
