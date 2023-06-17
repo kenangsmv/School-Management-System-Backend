@@ -62,7 +62,7 @@ exports.getProgram = AysncHandler(async (req, res) => {
 //@route  PUT /api/v1/programs/:id
 //@acess  Private
 
-exports.updatProgram = AysncHandler(async (req, res) => {
+exports.updateProgram = AysncHandler(async (req, res) => {
   const { name, description } = req.body;
   //check name exists
   const programFound = await ClassLevel.findOne({ name });

@@ -4,7 +4,7 @@ const {
   deleteProgram,
   getProgram,
   getPrograms,
-  updatProgram,
+  updateProgram,
 } = require("../../controller/academics/programs");
 const isAdmin = require("../../middlewares/isAdmin");
 const isLogin = require("../../middlewares/isLogin");
@@ -22,7 +22,7 @@ programRouter
 programRouter
   .route("/:id")
   .get(isLogin, isAdmin, getProgram)
-  .put(isLogin, isAdmin, updatProgram)
+  .put(isLogin, isAdmin, updateProgram)
   .delete(isLogin, isAdmin, deleteProgram);
 
 // academicTerRouter.get("/:id", isLogin, isAdmin, getAcademicYear);
