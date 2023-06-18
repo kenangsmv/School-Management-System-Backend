@@ -1,7 +1,7 @@
 const Student = require("../model/Academic/Student");
 const Teacher = require("../model/Staff/Teacher");
 
-const isStdudent = async (req, res, next) => {
+const isStudent = async (req, res, next) => {
   //find the user
   const userId = req?.userAuth?._id;
   const teacherFound = await Student.findById(userId);
@@ -13,4 +13,4 @@ const isStdudent = async (req, res, next) => {
   }
 };
 
-module.exports = isStdudent;
+module.exports = isStudent;
