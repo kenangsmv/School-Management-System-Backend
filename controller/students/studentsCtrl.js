@@ -305,7 +305,7 @@ exports.writeExam = AysncHandler(async (req, res) => {
 
   //Generate Exam results
   const examResults = await ExamResult.create({
-    student: studentFound?._id,
+    studentID: studentFound?.studentId,
     exam: examFound?._id,
     grade,
     score,
@@ -314,6 +314,7 @@ exports.writeExam = AysncHandler(async (req, res) => {
     classLevel: examFound?.classLevel,
     academicTerm: examFound?.academicTerm,
     academicYear: examFound?.academicYear,
+    answeredQuestions: answeredQuestions
   });
   //push the results
   studentFound.examResults.push(examResults?._id);

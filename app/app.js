@@ -12,6 +12,7 @@ const teachersRouter = require("../routes/staff/teachers");
 const examRouter = require('../routes/academics/examRoutes');
 const studentRouter = require("../routes/staff/student");
 const questionsRouter = require("../routes/academics/questionRoutes");
+const examResultRouter = require('../routes/academics/examResultsRoute');
 
 
 
@@ -33,6 +34,8 @@ app.use("/api/v1/teachers", teachersRouter);
 app.use("/api/v1/exams", examRouter);
 app.use("/api/v1/students", studentRouter);
 app.use("/api/v1/questions", questionsRouter);
+app.use("/api/v1/exam-results", examResultRouter);
+
 
 
 //Error middlewares
