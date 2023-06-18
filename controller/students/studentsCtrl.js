@@ -163,8 +163,16 @@ exports.studentUpdateProfile = AysncHandler(async (req, res) => {
 //@access   Private Admin only
 
 exports.adminUpdateStudent = AysncHandler(async (req, res) => {
-  const { classLevels, academicYear, program, name, email, prefectName } =
-    req.body;
+  const {
+    classLevels,
+    academicYear,
+    program,
+    name,
+    email,
+    prefectName,
+    isSuspended,
+    isWithdrawn,
+  } = req.body;
 
   //find the student by id
   const studentFound = await Student.findById(req.params.studentID);
@@ -182,6 +190,8 @@ exports.adminUpdateStudent = AysncHandler(async (req, res) => {
         academicYear,
         program,
         prefectName,
+        isSuspended,
+        isWithdrawn,
       },
       $addToSet: {
         classLevels,
@@ -265,7 +275,7 @@ exports.writeExam = AysncHandler(async (req, res) => {
   //calculate reports
   totalQuestions = questions.length;
   grade = (correctanswers / questions.length) * 100;
-  answeredQuestions = questions.map(question => {
+  answeredQuestions = questions.map((question) => {
     return {
       question: question.question,
       correctanswer: question.correctAnswer,
@@ -305,13 +315,13 @@ exports.writeExam = AysncHandler(async (req, res) => {
     academicTerm: examFound?.academicTerm,
     academicYear: examFound?.academicYear,
   });
-   //push the results 
+  //push the results
   studentFound.examResults.push(examResults?._id);
   //save
   await studentFound.save();
 
   //Promoting
-  //promote student to level 200
+  //promote student to next class
   if (
     examFound.academicTerm.name === "3rd term" &&
     status === "Pass" &&
@@ -322,7 +332,7 @@ exports.writeExam = AysncHandler(async (req, res) => {
     await studentFound.save();
   }
 
-  //promote student to level 300
+  //promote student to next class
   if (
     examFound.academicTerm.name === "3rd term" &&
     status === "Pass" &&
@@ -333,7 +343,7 @@ exports.writeExam = AysncHandler(async (req, res) => {
     await studentFound.save();
   }
 
-  //promote student to level 400
+  //promote student to next class
   if (
     examFound.academicTerm.name === "3rd term" &&
     status === "Pass" &&

@@ -47,10 +47,10 @@ const examResultSchema = new Schema(
     //   required: true,
     // },
 
-    subject: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Subject",
-    },
+    // subject: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Subject",
+    // },
     classLevel: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ClassLevel",
