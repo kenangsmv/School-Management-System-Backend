@@ -2,6 +2,7 @@ const AysncHandler = require("express-async-handler");
 const Teacher = require("../../model/Staff/Teacher");
 const { hashPassword, isPassMatched } = require("../../utils/helpers");
 const generateToken = require("../../utils/generateToken");
+const Admin = require("../../model/Staff/Admin");
 
 //@desc  Admin Register Teacher
 //@route POST /api/teachers/admin/register
@@ -9,11 +10,19 @@ const generateToken = require("../../utils/generateToken");
 
 exports.adminRegisterTeacher = AysncHandler(async (req, res) => {
   const { name, email, password } = req.body;
+
+  //find the admin
+  const adminFound = await Admin.findById(req.userAuth._id);
+  if (!adminFound) {
+    throw new Error("Admin not Found");
+  }
+
   //check if teacher already exists
   const teacher = await Teacher.findOne({ email });
   if (teacher) {
     throw new Error("Teacher already employed");
   }
+
   //Hash password
   const hashedPassword = await hashPassword(password);
   // create
@@ -22,6 +31,11 @@ exports.adminRegisterTeacher = AysncHandler(async (req, res) => {
     email,
     password: hashedPassword,
   });
+
+  //push teacher into admin
+  adminFound.teachers.push(teacherCreated?._id);
+  await adminFound.save();
+
   //send teacher data
   res.status(201).json({
     status: "success",
