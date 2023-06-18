@@ -10,28 +10,35 @@ const {
   writeExam
 } = require("../../controller/students/studentsCtrl");
 
+
 const isAdmin = require("../../middlewares/isAdmin");
 const isLogin = require("../../middlewares/isLogin");
 const isStudent = require("../../middlewares/isStudent");
 const isStudentLogin = require("../../middlewares/isStudentLogin");
+const isAuthenticated = require("../../middlewares/isAuthenticated");
+const Student = require("../../model/Academic/Student");
+const roleRestriction = require("../../middlewares/roleRestriction");
+const Admin = require("../../model/Staff/Admin");
+
+
 const studentRouter = express.Router();
 
-studentRouter.post("/admin/register", isLogin, isAdmin, adminRegisterStudent);
+studentRouter.post("/admin/register", isAuthenticated(Admin), roleRestriction("admin"), adminRegisterStudent);
 studentRouter.post("/login", loginStudent);
-studentRouter.get("/profile", isStudentLogin, isStudent, getStudentProfile);
-studentRouter.get("/admin", isLogin, isAdmin, getAllStudentsByAdmin);
-studentRouter.get("/:studentID/admin", isLogin, isAdmin, getStudentByAdmin);
-studentRouter.put("/update", isStudentLogin, isStudent, studentUpdateProfile);
+studentRouter.get("/profile", isAuthenticated(Student), roleRestriction("student"), getStudentProfile);
+studentRouter.get("/admin", isAuthenticated(Admin), roleRestriction("admin"), getAllStudentsByAdmin);
+studentRouter.get("/:studentID/admin", isAuthenticated(Admin), roleRestriction("admin"), getStudentByAdmin);
+studentRouter.put("/update", isAuthenticated(Student), roleRestriction("student"), studentUpdateProfile);
 studentRouter.put(
   "/:studentID/update/admin",
-  isLogin,
-  isAdmin,
+  isAuthenticated(Admin),
+  roleRestriction("admin"),
   adminUpdateStudent
 );
 studentRouter.post(
   "/exam/:examID/write",
-  isStudentLogin,
-  isStudent,
+  isAuthenticated(Student),
+  roleRestriction("student"),
   writeExam
 );
 module.exports = studentRouter;
