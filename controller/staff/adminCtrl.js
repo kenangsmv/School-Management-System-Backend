@@ -59,12 +59,7 @@ exports.loginAdminCtrl = AsyncHandler(async (req, res) => {
 //@router GET /api/v1/admins/
 //@access Private
 exports.getAllAdminCtrl = AsyncHandler(async (req, res) => {
-  const admins = await Admin.find();
-  res.status(200).json({
-    status: "success",
-    message: "Admin fetched succesfully",
-    data: admins,
-  });
+  res.status(200).json(res.results);
 });
 
 //@desc get Single admin
