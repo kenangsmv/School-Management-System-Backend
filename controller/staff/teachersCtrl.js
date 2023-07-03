@@ -9,7 +9,7 @@ const Admin = require("../../model/Staff/Admin");
 //@acess  Private
 
 exports.adminRegisterTeacher = AysncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, program } = req.body;
 
   //find the admin
   const adminFound = await Admin.findById(req.userAuth._id);
@@ -29,6 +29,7 @@ exports.adminRegisterTeacher = AysncHandler(async (req, res) => {
   const teacherCreated = await Teacher.create({
     name,
     email,
+    program,
     password: hashedPassword,
   });
 
@@ -226,4 +227,12 @@ exports.adminUpdateTeacher = AysncHandler(async (req, res) => {
       message: "Teacher updated successfully",
     });
   }
+});
+
+exports.deleteTeacher = AysncHandler(async (req, res) => {
+  await Teacher.findByIdAndDelete(req.params.id);
+  res.status(201).json({
+    status: "success",
+    message: "teacher deleted successfully",
+  });
 });

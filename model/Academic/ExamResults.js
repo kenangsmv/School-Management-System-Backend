@@ -29,8 +29,8 @@ const examResultSchema = new Schema(
     },
     answeredQuestions: [
       {
-        type: Object
-      }
+        type: Object,
+      },
     ],
     //failed/Passed
     status: {
@@ -43,7 +43,7 @@ const examResultSchema = new Schema(
     remarks: {
       type: String,
       required: true,
-      enum: ["AA", "BA", "BB", "CC", "FF",],
+      enum: ["AA", "BA", "BB", "CC", "FF"],
       default: "CC",
     },
     // position: {
@@ -62,12 +62,12 @@ const examResultSchema = new Schema(
     academicTerm: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "AcademicTerm",
-      required: true,
+      required: false,
     },
     academicYear: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "AcademicYear",
-      required: true,
+      required: false,
     },
     isPublished: {
       type: Boolean,

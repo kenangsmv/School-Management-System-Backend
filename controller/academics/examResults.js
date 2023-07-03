@@ -15,19 +15,21 @@ exports.checkExamResults = AsyncHandler(async (req, res) => {
   }
 
   //finding the exam results
-  const examResult = await ExamResult.findOne({
-    studentID: studentFound?.studentId,
-    _id: req.params.id,
-  })
-    .populate({
-      path: "exam",
-      populate: {
-        path: "questions",
-      },
-    })
-    .populate("classLevel")
-    .populate("academicTerm")
-    .populate("academicYear");
+  const examResult = await ExamResult.find({
+    studentID: studentFound?._id,
+    // _id: req.params.id,
+  }).populate({
+    path: "exam",
+    populate: {
+      path: "questions",
+    },
+    populate: {
+      path: "subject",
+    },
+  });
+  // .populate("classLevel")
+  // .populate("academicTerm")
+  // .populate("academicYear");
 
   //check if exam published
   if (examResult?.isPublished === false) {

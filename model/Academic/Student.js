@@ -23,7 +23,7 @@ const studentSchema = new mongoose.Schema(
           Date.now().toString().slice(2, 4) +
           this.name
             .split(" ")
-            .map(name => name[0])
+            .map((name) => name[0])
             .join("")
             .toUpperCase()
         );

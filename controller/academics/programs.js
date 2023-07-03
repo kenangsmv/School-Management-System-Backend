@@ -19,6 +19,7 @@ exports.createProgram = AysncHandler(async (req, res) => {
   const programCreated = await Program.create({
     name,
     description,
+    teacher,
     createdBy: req.userAuth._id,
   });
   //push program into admin
@@ -100,7 +101,7 @@ exports.deleteProgram = AysncHandler(async (req, res) => {
   });
 });
 
-	//@desc   Add subject to Program
+//@desc   Add subject to Program
 //@route  PUT /api/v1/programs/:id/subjects
 //@acess  Private
 exports.addSubjectToProgram = AysncHandler(async (req, res) => {
@@ -117,7 +118,7 @@ exports.addSubjectToProgram = AysncHandler(async (req, res) => {
   }
   //Check if subject exists
   const subjectExists = program.subjects?.find(
-    sub => sub?.toString() === subjectFound?._id.toString()
+    (sub) => sub?.toString() === subjectFound?._id.toString()
   );
   if (subjectExists) {
     throw new Error("Subject already exists");

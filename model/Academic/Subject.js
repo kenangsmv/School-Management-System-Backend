@@ -10,7 +10,7 @@ const subjectSchema = new Schema(
     },
     description: {
       type: String,
-      required: true,
+      required: false,
     },
     teacher: {
       type: Schema.Types.ObjectId,
@@ -28,9 +28,16 @@ const subjectSchema = new Schema(
     },
     duration: {
       type: String,
-      required: true,
+      required: false,
       default: "3 months",
     },
+    students: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Student",
+        default: [],
+      },
+    ],
   },
   { timestamps: true }
 );

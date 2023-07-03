@@ -15,19 +15,24 @@ const programRouter = express.Router();
 // academicTerRouter.post("/", isLogin, isAdmin, createAcademicYear);
 // academicTerRouter.get("/", isLogin, isAdmin, getAcademicYears);
 
+//admin Only
+// programRouter
+//   .route("/")
+//   .post(isLogin, isAdmin, createProgram)
+//   .get(isLogin, isAdmin, getPrograms);
+
 programRouter
   .route("/")
   .post(isLogin, isAdmin, createProgram)
-  .get(isLogin, isAdmin, getPrograms);
+  .get(isLogin, getPrograms);
 
 programRouter
   .route("/:id")
   .get(isLogin, isAdmin, getProgram)
   .put(isLogin, isAdmin, updateProgram)
   .delete(isLogin, isAdmin, deleteProgram);
-  
-programRouter.put("/:id/subjects", isLogin, isAdmin, addSubjectToProgram);
 
+programRouter.put("/:id/subjects", isLogin, isAdmin, addSubjectToProgram);
 
 // academicTerRouter.get("/:id", isLogin, isAdmin, getAcademicYear);
 // academicTerRouter.put("/:id", isLogin, isAdmin, updateAcademicYear);

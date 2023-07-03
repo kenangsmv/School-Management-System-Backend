@@ -7,9 +7,10 @@ const {
   getStudentByAdmin,
   studentUpdateProfile,
   adminUpdateStudent,
-  writeExam
+  addStudentToSubject,
+  writeExam,
+  deleteStudent,
 } = require("../../controller/students/studentsCtrl");
-
 
 const isAdmin = require("../../middlewares/isAdmin");
 const isLogin = require("../../middlewares/isLogin");
@@ -20,15 +21,39 @@ const Student = require("../../model/Academic/Student");
 const roleRestriction = require("../../middlewares/roleRestriction");
 const Admin = require("../../model/Staff/Admin");
 
-
 const studentRouter = express.Router();
 
-studentRouter.post("/admin/register", isAuthenticated(Admin), roleRestriction("admin"), adminRegisterStudent);
+studentRouter.post(
+  "/admin/register",
+  isAuthenticated(Admin),
+  roleRestriction("admin"),
+  adminRegisterStudent
+);
 studentRouter.post("/login", loginStudent);
-studentRouter.get("/profile", isAuthenticated(Student), roleRestriction("student"), getStudentProfile);
-studentRouter.get("/admin", isAuthenticated(Admin), roleRestriction("admin"), getAllStudentsByAdmin);
-studentRouter.get("/:studentID/admin", isAuthenticated(Admin), roleRestriction("admin"), getStudentByAdmin);
-studentRouter.put("/update", isAuthenticated(Student), roleRestriction("student"), studentUpdateProfile);
+studentRouter.get(
+  "/profile",
+  isAuthenticated(Student),
+  roleRestriction("student"),
+  getStudentProfile
+);
+studentRouter.get(
+  "/admin",
+  isAuthenticated(Admin),
+  roleRestriction("admin"),
+  getAllStudentsByAdmin
+);
+studentRouter.get(
+  "/:studentID/admin",
+  isAuthenticated(Admin),
+  roleRestriction("admin"),
+  getStudentByAdmin
+);
+studentRouter.put(
+  "/update",
+  isAuthenticated(Student),
+  roleRestriction("student"),
+  studentUpdateProfile
+);
 studentRouter.put(
   "/:studentID/update/admin",
   isAuthenticated(Admin),
@@ -41,4 +66,6 @@ studentRouter.post(
   roleRestriction("student"),
   writeExam
 );
+studentRouter.delete("/:id", isLogin, isAdmin, deleteStudent);
+
 module.exports = studentRouter;

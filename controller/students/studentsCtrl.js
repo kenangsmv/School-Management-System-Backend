@@ -5,20 +5,20 @@ const ExamResult = require("../../model/Academic/ExamResults");
 const generateToken = require("../../utils/generateToken");
 const { hashPassword, isPassMatched } = require("../../utils/helpers");
 const Admin = require("../../model/Staff/Admin");
-
+const Subject = require("../../model/Academic/Subject");
 
 //@desc  Admin Register Student
 //@route POST /api/students/admin/register
 //@acess  Private Admin only
 
 exports.adminRegisterStudent = AysncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, role, classLevels, password, program } = req.body;
 
-    //find the admin
-    const adminFound = await Admin.findById(req.userAuth._id);
-    if (!adminFound) {
-      throw new Error("Admin not Found");
-    }
+  //find the admin
+  const adminFound = await Admin.findById(req.userAuth._id);
+  if (!adminFound) {
+    throw new Error("Admin not Found");
+  }
 
   //check if teacher already exists
   const student = await Student.findOne({ email });
@@ -31,13 +31,15 @@ exports.adminRegisterStudent = AysncHandler(async (req, res) => {
   const studentRegistered = await Student.create({
     name,
     email,
+    role,
+    classLevels,
     password: hashedPassword,
+    program: program,
   });
-  
+
   //push student into admin
   adminFound.students.push(studentRegistered?._id);
   await adminFound.save();
-
 
   //send student data
   res.status(201).json({
@@ -52,9 +54,11 @@ exports.adminRegisterStudent = AysncHandler(async (req, res) => {
 //@access  Public
 
 exports.loginStudent = AysncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { studentId, password } = req.body;
   //find the  user
-  const student = await Student.findOne({ email });
+  const student = await Student.findOne({
+    studentId,
+  });
   if (!student) {
     return res.json({ message: "Invalid login crendentials" });
   }
@@ -76,14 +80,16 @@ exports.loginStudent = AysncHandler(async (req, res) => {
 //@access  Private Student only
 
 exports.getStudentProfile = AysncHandler(async (req, res) => {
-  const student = await Student.findById(req.userAuth?._id).select(
-    "-password -createdAt -updatedAt").populate("examResults");
+  const student = await Student.findById(req.userAuth?._id)
+    .select("-password -createdAt -updatedAt")
+    .populate("examResults");
   if (!student) {
     throw new Error("Student not found");
   }
 
   //geting student profile and get student exam results
   const studentProfile = {
+    id: req.userAuth?._id,
     name: student?.name,
     email: student?.email,
     currentClassLevel: student?.currentClassLevel,
@@ -107,7 +113,7 @@ exports.getStudentProfile = AysncHandler(async (req, res) => {
     status: "success",
     data: {
       studentProfile,
-      currentExamResults: isPublished ? currentExamResults : [] 
+      currentExamResults: isPublished ? currentExamResults : [],
     },
     message: "Student Profile fetched  successfully",
   });
@@ -259,9 +265,10 @@ exports.writeExam = AysncHandler(async (req, res) => {
     throw new Error("Student not found");
   }
   //Get exam
-  const examFound = await Exam.findById(req.params.examID)
-    .populate("questions")
-    .populate("academicTerm");
+  const examFound = await Exam.findById(req.params.examID).populate(
+    "questions"
+  );
+  // .populate("academicTerm");
 
   if (!examFound) {
     throw new Error("Exam not found");
@@ -278,7 +285,7 @@ exports.writeExam = AysncHandler(async (req, res) => {
 
   //check if student has already taken the exams
   const studentFoundInResults = await ExamResult.findOne({
-    student: studentFound?._id,
+    studentID: studentFound?.studentId,
   });
   if (studentFoundInResults) {
     throw new Error("You have already written this exam");
@@ -344,15 +351,15 @@ exports.writeExam = AysncHandler(async (req, res) => {
 
   //Generate Exam results
   const examResults = await ExamResult.create({
-    studentID: studentFound?.studentId,
+    studentID: studentFound?._id,
     exam: examFound?._id,
     grade,
     score,
     status,
     remarks,
     classLevel: examFound?.classLevel,
-    academicTerm: examFound?.academicTerm,
-    academicYear: examFound?.academicYear,
+    // academicTerm: examFound?.academicTerm,
+    // academicYear: examFound?.academicYear,
     answeredQuestions: answeredQuestions,
   });
   //push the results
@@ -362,51 +369,59 @@ exports.writeExam = AysncHandler(async (req, res) => {
 
   //Promoting
   //promote student to next class
-  if (
-    examFound.academicTerm.name === "3rd term" &&
-    status === "Pass" &&
-    studentFound?.currentClassLevel === "Level 100"
-  ) {
-    studentFound.classLevels.push("Level 200");
-    studentFound.currentClassLevel = "Level 200";
-    await studentFound.save();
-  }
+  // if (
+  //   examFound.academicTerm.name === "3rd term" &&
+  //   status === "Pass" &&
+  //   studentFound?.currentClassLevel === "Level 100"
+  // ) {
+  //   studentFound.classLevels.push("Level 200");
+  //   studentFound.currentClassLevel = "Level 200";
+  //   await studentFound.save();
+  // }
 
   //promote student to next class
-  if (
-    examFound.academicTerm.name === "3rd term" &&
-    status === "Pass" &&
-    studentFound?.currentClassLevel === "Level 200"
-  ) {
-    studentFound.classLevels.push("Level 300");
-    studentFound.currentClassLevel = "Level 300";
-    await studentFound.save();
-  }
+  // if (
+  //   examFound.academicTerm.name === "3rd term" &&
+  //   status === "Pass" &&
+  //   studentFound?.currentClassLevel === "Level 200"
+  // ) {
+  //   studentFound.classLevels.push("Level 300");
+  //   studentFound.currentClassLevel = "Level 300";
+  //   await studentFound.save();
+  // }
 
   //promote student to next class
-  if (
-    examFound.academicTerm.name === "3rd term" &&
-    status === "Pass" &&
-    studentFound?.currentClassLevel === "Level 300"
-  ) {
-    studentFound.classLevels.push("Level 400");
-    studentFound.currentClassLevel = "Level 400";
-    await studentFound.save();
-  }
+  // if (
+  //   examFound.academicTerm.name === "3rd term" &&
+  //   status === "Pass" &&
+  //   studentFound?.currentClassLevel === "Level 300"
+  // ) {
+  //   studentFound.classLevels.push("Level 400");
+  //   studentFound.currentClassLevel = "Level 400";
+  //   await studentFound.save();
+  // }
 
   //promote student to graduate
-  if (
-    examFound.academicTerm.name === "3rd term" &&
-    status === "Pass" &&
-    studentFound?.currentClassLevel === "Level 400"
-  ) {
-    studentFound.isGraduated = true;
-    studentFound.yearGraduated = new Date();
-    await studentFound.save();
-  }
+  // if (
+  //   examFound.academicTerm.name === "3rd term" &&
+  //   status === "Pass" &&
+  //   studentFound?.currentClassLevel === "Level 400"
+  // ) {
+  //   studentFound.isGraduated = true;
+  //   studentFound.yearGraduated = new Date();
+  //   await studentFound.save();
+  // }
 
   res.status(200).json({
     status: "success",
     data: "You have submitted your exam. Check later for the results",
+  });
+});
+
+exports.deleteStudent = AysncHandler(async (req, res) => {
+  await Student.findByIdAndDelete(req.params.id);
+  res.status(201).json({
+    status: "success",
+    message: "student deleted successfully",
   });
 });

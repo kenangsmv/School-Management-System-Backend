@@ -7,7 +7,7 @@ const Question = require("../../model/Academic/Questions");
 //@acess Private  Teachers only
 
 exports.createQuestion = AysncHandler(async (req, res) => {
-  const { question, optionA, optionB, optionC, optionD, correctAnswer } =
+  const { question, exam, optionA, optionB, optionC, optionD, correctAnswer } =
     req.body;
   //find the exam
   const examFound = await Exam.findById(req.params.examID);
@@ -22,6 +22,7 @@ exports.createQuestion = AysncHandler(async (req, res) => {
   //create exam
   const questionCreated = await Question.create({
     question,
+    exam,
     optionA,
     optionB,
     optionC,
