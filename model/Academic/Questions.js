@@ -9,6 +9,10 @@ const questionSchema = new Schema(
       type: String,
       required: true,
     },
+    exam: {
+      type: String,
+      required: true,
+    },
     optionA: {
       type: String,
       required: true,
@@ -19,11 +23,11 @@ const questionSchema = new Schema(
     },
     optionC: {
       type: String,
-      required: true,
+      required: false,
     },
     optionD: {
       type: String,
-      required: true,
+      required: false,
     },
     correctAnswer: {
       type: String,
@@ -36,7 +40,7 @@ const questionSchema = new Schema(
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "Teacher",
-      required: true,
+      required: false,
     },
   },
   {

@@ -2,7 +2,6 @@ const Admin = require("../model/Staff/Admin");
 const Teacher = require("../model/Staff/Teacher");
 const verifyToken = require("../utils/verifyToken");
 
-
 const isTeacherLogin = async (req, res, next) => {
   // get token from header
   const headerObj = req.headers;

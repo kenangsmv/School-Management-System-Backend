@@ -9,17 +9,17 @@ const Teacher = require("../../model/Staff/Teacher");
 exports.createExam = AysncHandler(async (req, res) => {
   const {
     name,
-    description,
+    // description,
     subject,
-    program,
-    academicTerm,
+    // program,
+    // academicTerm,
     duration,
     examDate,
     examTime,
-    examType,
+    // examType,
     createdBy,
-    academicYear,
-    classLevel
+    // academicYear,
+    // classLevel
   } = req.body;
   //find teacher
   const teacherFound = await Teacher.findById(req.userAuth?._id);
@@ -27,25 +27,25 @@ exports.createExam = AysncHandler(async (req, res) => {
     throw new Error("Teacher not found");
   }
   //exam exists
-  const examExists = await Exam.findOne({ name });
+  const examExists = await Exam.findOne({ name, subject });
   if (examExists) {
     throw new Error("Exam already exists");
   }
   //create
   const examCreated = new Exam({
     name,
-    description,
-    academicTerm,
-    academicYear,
-    classLevel,
+    // description,
+    // academicTerm,
+    // academicYear,
+    // classLevel,
     createdBy,
     duration,
     examDate,
     examTime,
-    examType,
+    // examType,
     subject,
-    program,
-    createdBy: req.userAuth?._id
+    // program,
+    createdBy: req.userAuth?._id,
   });
   //push the exam into teacher
   teacherFound.examsCreated.push(examCreated._id);
@@ -67,8 +67,9 @@ exports.getExams = AysncHandler(async (req, res) => {
   const exams = await Exam.find().populate({
     path: "questions",
     populate: {
-      path:"createdBy"
-    }
+      path: "createdBy",
+    },
+    path: "subject",
   });
   res.status(201).json({
     status: "success",
@@ -81,7 +82,9 @@ exports.getExams = AysncHandler(async (req, res) => {
 //@route GET /api/v1/exams/:id
 //@acess  Private
 exports.getExam = AysncHandler(async (req, res) => {
-  const exam = await Exam.findById(req.params.id);
+  const exam = await Exam.findById(req.params.id)
+    .populate("questions")
+    .populate("academicTerm");
   res.status(201).json({
     status: "success",
     message: "Exam fetched successfully",
@@ -142,4 +145,3 @@ exports.updateExam = AysncHandler(async (req, res) => {
     data: examUpdated,
   });
 });
-
