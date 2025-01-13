@@ -33,12 +33,10 @@ const teacherSchema = new mongoose.Schema(
         );
       },
     },
-    //if witdrawn, the teacher will not be able to login
     isWitdrawn: {
       type: Boolean,
       default: false,
     },
-    //if suspended, the teacher can login but cannot perform any task
     isSuspended: {
       type: Boolean,
       default: false,
